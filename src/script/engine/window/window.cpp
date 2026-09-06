@@ -1,5 +1,5 @@
 #include <SDL3/SDL.h>
-#include <script/engine/window/window.h>
+#include "window.h"
 
 bool Window::Init(const char* title, int width, int height)
 {
@@ -11,6 +11,11 @@ bool Window::Init(const char* title, int width, int height)
     SDL_SetWindowBordered(window, true);
 
     return window != nullptr || !(width < 800 || height < 450);    
+}
+
+SDL_Window* Window::getWindow()
+{
+    return window;
 }
 
 bool Window::WindowEventHandler(const SDL_Event* event)

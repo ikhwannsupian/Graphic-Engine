@@ -19,7 +19,7 @@ SDL_AppResult SDL_AppInit (void** appstate, int argc, char *argv[])
     try
     {
         Renderer render;
-        render.runInstance();
+        render.runInstance(window->getWindow());
     }
     catch (const std::exception& err)
     {

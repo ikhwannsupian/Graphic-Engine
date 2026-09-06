@@ -6,6 +6,7 @@ class Window
 {
     public :
         bool Init(const char* title, int width, int height);
+        SDL_Window* getWindow();
         bool WindowEventHandler(const SDL_Event* event);
         void WindowDestroy();
         bool fullscreen = true;
@@ -13,7 +14,6 @@ class Window
 
     private :
         SDL_Window* window = nullptr;
-
 };
 
 #endif
