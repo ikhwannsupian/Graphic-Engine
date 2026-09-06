@@ -1,32 +1,35 @@
 #include <cstdlib>
 #include <cstddef>
+#include <malloc.h>
+
 #include <vulkan/vulkan.hpp>
 
 #include "allocator.h"
 
+
 void* VKAPI_PTR vkAllocate(
-    void* UserData,
+    void* userData,
     size_t size,
-    size_t alingment,
-    VkSystemAllocationScope allocationScope
+    size_t alignment,
+    VkSystemAllocationScope scope
 )
 {
-    _aligned_malloc(size, alingment);
+    return _aligned_malloc(size, alignment);
 }
 
 void* VKAPI_PTR vkReallocate(
-    void* UserData,
-    void* Original,
+    void* userData,
+    void* original,
     size_t size,
-    size_t alingment,
-    VkSystemAllocationScope allocationScope
+    size_t alignment,
+    VkSystemAllocationScope scope
 )
 {
-    return nullptr;
+    return _aligned_realloc(original, size, alignment);
 }
 
 void VKAPI_PTR vkFree(
-    void* UserData,
+    void* userData,
     void* memory
 )
 {
