@@ -9,17 +9,24 @@
 #include <script/engine/window/window.h>
 #include <script/engine/renderer/renderer.h>
 
+struct Chaos
+{
+    Window window;
+    Renderer renderer; 
+};
 
 SDL_AppResult SDL_AppInit (void** appstate, int argc, char *argv[])
 {
-    Window* window = new Window();
-    *appstate = window;
-    if(!window->Init("", 1600, 900)) return SDL_APP_FAILURE;
+    Chaos* brokenWorld = new Chaos();
+    *appstate = brokenWorld;
+    Window& window = brokenWorld->window;
+    Renderer& renderer = brokenWorld->renderer;
+
+    if(!window.Init("", 1600, 900)) return SDL_APP_FAILURE;
 
     try
     {
-        Renderer render;
-        render.runInstance(window->getWindow());
+        renderer.runInstance(window.getWindow());
     }
     catch (const std::exception& err)
     {
@@ -31,14 +38,20 @@ SDL_AppResult SDL_AppInit (void** appstate, int argc, char *argv[])
 
 SDL_AppResult SDL_AppEvent (void* appstate, SDL_Event* event)
 {
-    Window* window = static_cast<Window*>(appstate);
-    if(!window->WindowEventHandler(event)) return SDL_APP_SUCCESS;
+    Chaos* brokenWorld = static_cast<Chaos*>(appstate);
+    Window& window = brokenWorld->window;
+    Renderer& renderer = brokenWorld->renderer;
+
+    if(!window.WindowEventHandler(event)) return SDL_APP_SUCCESS;
     return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult SDL_AppIterate (void* appstate)
 {
-    Window* window = static_cast<Window*>(appstate);
+    Chaos* brokenWorld = static_cast<Chaos*>(appstate);
+    Window& window = brokenWorld->window;
+    Renderer& renderer = brokenWorld->renderer;
+
     return SDL_APP_CONTINUE;
 }
 
@@ -47,12 +60,11 @@ void SDL_AppQuit (void* appstate, SDL_AppResult result)
 {
     if (appstate)
     {
-        Renderer* render = static_cast<Renderer*>(appstate);
-        render->cleanup();
-        Window* window = static_cast<Window*>(appstate);
-        window->WindowDestroy();
-        delete window;
-        window = nullptr;
+        Chaos* brokenWorld = static_cast<Chaos*>(appstate);
+        brokenWorld->renderer.cleanup();
+        brokenWorld->window.WindowDestroy();
+        delete brokenWorld;
+        brokenWorld = nullptr;
     }
     SDL_Quit();
 }
