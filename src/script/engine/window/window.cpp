@@ -10,7 +10,7 @@ bool Window::Init(const char* title, int width, int height)
     SDL_SetWindowMinimumSize(window, 800, 450);
     SDL_SetWindowBordered(window, true);
 
-    return window != nullptr || !(width < 800 || height < 450);    
+    return window != nullptr ;    
 }
 
 SDL_Window* Window::getWindow()
@@ -50,4 +50,3 @@ void Window::WindowDestroy()
         window = nullptr;
     }
 }
-

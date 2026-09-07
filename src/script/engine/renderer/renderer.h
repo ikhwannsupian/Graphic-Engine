@@ -1,35 +1,24 @@
 #ifndef RENDERER_H
 #define RENDERER_H
-
+#include <script/engine/renderer/vkDevice/device.h>
+#include <script/engine/renderer/vkInstance/instance.h>
+#include <script/engine/renderer/vkSurface/surface.h>
 #include <vulkan/vulkan.hpp>
 
 class Renderer
 {
     public:
 
-        void runInstance(SDL_Window* window)
-        {
-            createInstance();
-            createDevice();
-            createSurface(window);
-        
-        };
+        void run(SDL_Window* window);
 
-        void cleanup();
 
     private:
-        vk::Instance instance = nullptr;
-        vk::SurfaceKHR surface = nullptr;        
-        vk::Device device = nullptr;
-        vk::PhysicalDevice physicalDevice = nullptr;
-        vk::Queue queue;
+        VulkanInstance instance;
+        VulkanSurface surface;
+        VulkanDevice device;
 
-        vk::AllocationCallbacks allocator{};
 
-        void createAllocator();
-        void createInstance();
-        void createSurface(SDL_Window* window);
-        void createDevice();      
+
 };
 
 #endif 

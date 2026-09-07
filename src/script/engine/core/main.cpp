@@ -22,15 +22,15 @@ SDL_AppResult SDL_AppInit (void** appstate, int argc, char *argv[])
     Window& window = brokenWorld->window;
     Renderer& renderer = brokenWorld->renderer;
 
-    if(!window.Init("", 1600, 900)) return SDL_APP_FAILURE;
+    if(!window.Init("", 90, 90)) return SDL_APP_FAILURE;
 
     try
     {
-        renderer.runInstance(window.getWindow());
+        renderer.run(window.getWindow());
     }
     catch (const std::exception& err)
     {
-        std::cerr << err.what() << std::endl;
+        std::cerr << err.what() << '\n';
         return SDL_APP_FAILURE;
     }
     return SDL_APP_CONTINUE;
@@ -61,7 +61,6 @@ void SDL_AppQuit (void* appstate, SDL_AppResult result)
     if (appstate)
     {
         Chaos* brokenWorld = static_cast<Chaos*>(appstate);
-        brokenWorld->renderer.cleanup();
         brokenWorld->window.WindowDestroy();
         delete brokenWorld;
         brokenWorld = nullptr;
