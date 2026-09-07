@@ -14,6 +14,8 @@ class VulkanInstance
         vk::Instance instance = nullptr;
         vk::ApplicationInfo appInfo{};
         vk::InstanceCreateInfo instanceInfo{};
+
+        uint32_t extCount = 0;
 };
 
 #endif

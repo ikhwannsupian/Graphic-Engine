@@ -12,11 +12,9 @@
 void VulkanSurface::create(SDL_Window* window, vk::Instance instance)
 {
     this->instance = instance;
-    SDL_Vulkan_GetInstanceExtensions(&extCount);
-    std::vector<const char*> extensions(extCount);
 
-    SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(instance), nullptr, &rawSurface);
-    surface = static_cast<vk::SurfaceKHR>(rawSurface);
+    if(!SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(instance), nullptr, &rawSurface)) std::cerr << "[SURFACE] Surface creation fail" << '\n';
+    surface = vk::SurfaceKHR(rawSurface);
 
     std::cout << "[Vulkan] Surface succesfully create" << '\n';
 }

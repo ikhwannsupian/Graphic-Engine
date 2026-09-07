@@ -16,7 +16,6 @@ class VulkanSurface
     private:
         vk::Instance instance = nullptr;
         VkSurfaceKHR rawSurface = VK_NULL_HANDLE;
-        uint32_t extCount = 0;
         vk::SurfaceKHR surface = nullptr;        
 };
 
