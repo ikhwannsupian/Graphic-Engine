@@ -1,14 +1,15 @@
 #include <SDL3/SDL.h>
 #include "window.h"
 
-bool Window::Init(const char* title, int width, int height)
+bool Window::create(const char* title, int width, int height)
 {
     if (!SDL_Init(SDL_INIT_VIDEO)) return false;
 
     window = SDL_CreateWindow(title, width, height, SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN);
+    
     SDL_SetWindowAspectRatio(window, 16.0 / 9.0, 16.0 / 9.0f);
     SDL_SetWindowMinimumSize(window, 800, 450);
-    SDL_SetWindowBordered(window, true);
+    // SDL_SetWindowBordered(window, true);
 
     return window != nullptr ;    
 }

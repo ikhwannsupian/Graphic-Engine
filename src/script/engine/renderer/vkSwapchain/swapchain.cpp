@@ -16,7 +16,7 @@ void VulkanSwapchain::create(vk::Device device, vk::PhysicalDevice physicalDevic
     auto formats = physicalDevice.getSurfaceFormatsKHR(surface);
     auto presentModes = physicalDevice.getSurfacePresentModesKHR(surface);
 
-    vk::SurfaceFormatKHR surfaceFormat = formats[0];
+    surfaceFormat = formats[0];
 
     for (const auto& format : formats)
     {
@@ -30,7 +30,7 @@ void VulkanSwapchain::create(vk::Device device, vk::PhysicalDevice physicalDevic
 
     vk::PresentModeKHR presentMode = vk::PresentModeKHR::eFifo;
 
-    vk::Extent2D extent;
+    extent;
 
     if (capabilities.currentExtent.width != UINT32_MAX)
     {
@@ -42,10 +42,9 @@ void VulkanSwapchain::create(vk::Device device, vk::PhysicalDevice physicalDevic
         int height;
         SDL_GetWindowSizeInPixels(window, &width, &height);
 
-        vk::Extent2D extent{
-            static_cast<uint32_t>(width),
-            static_cast<uint32_t>(height)
-        };
+        extent
+            .setWidth(static_cast<uint32_t>(width))
+            .setHeight(static_cast<uint32_t>(height));
 
         extent.width = std::clamp(
             extent.width,
@@ -57,6 +56,7 @@ void VulkanSwapchain::create(vk::Device device, vk::PhysicalDevice physicalDevic
             capabilities.minImageExtent.height,
             capabilities.maxImageExtent.height);
     }
+
 
     uint32_t imageCount = capabilities.minImageCount + 1;
 
@@ -81,14 +81,39 @@ void VulkanSwapchain::create(vk::Device device, vk::PhysicalDevice physicalDevic
         .setPresentMode(presentMode)
         .setClipped(VK_TRUE);
 
-    if(!(swapchain = device.createSwapchainKHR(swapchainInfo))) std::cerr << "[SWAPCHAIN] Swapchain creation fail" << '\n';
 
+
+    swapchain = device.createSwapchainKHR(swapchainInfo);
     swapchainImages = device.getSwapchainImagesKHR(swapchain);
+
 
     std::cout << "[Vulkan] Swapchain and Swapchain Images successfully created!\n";
 }
 
+std::vector<vk::Image> VulkanSwapchain::getSwapchainImage()
+{
+    return swapchainImages;
+}
+
+vk::SurfaceFormatKHR VulkanSwapchain::getSurfaceFormat()
+{
+    return surfaceFormat;
+}
+
+vk::SwapchainKHR VulkanSwapchain::getSwapchain()
+{
+    return swapchain;
+}
+
+vk::Extent2D VulkanSwapchain::getExtent()
+{
+    return extent;
+}
+void VulkanSwapchain::destroy()
+{
+    device.destroySwapchainKHR(swapchain);  
+}
 VulkanSwapchain::~VulkanSwapchain()
 {
-    device.destroySwapchainKHR(swapchain);
+    destroy();
 }

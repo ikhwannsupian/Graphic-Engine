@@ -12,6 +12,11 @@ void VulkanInstance::create()
 
     std::vector<const char*> extensions(sdlExtensions, sdlExtensions + extCount);
 
+    std::vector<const char*> layers = 
+    {
+        "VK_LAYER_KHRONOS_validation"
+    };
+
     appInfo
         .setPApplicationName("Broken World")
         .setApplicationVersion(VK_MAKE_VERSION(0, 0, 1))
@@ -22,9 +27,11 @@ void VulkanInstance::create()
 
     instanceInfo
         .setPApplicationInfo(&appInfo)
-        .setPEnabledExtensionNames(extensions);
+        .setPEnabledExtensionNames(extensions)
+        .setPEnabledLayerNames(layers);
 
-    if(!(instance = vk::createInstance(instanceInfo))) std::cerr << "[INSTANCE] Swapchain creation fail" << '\n';;
+    
+    instance = vk::createInstance(instanceInfo);
 
     std::cout << "[Vulkan] Instance created successfully!\n";
 }
@@ -34,8 +41,13 @@ vk::Instance VulkanInstance::get() const
     return instance;
 }
 
-VulkanInstance::~VulkanInstance()
+void VulkanInstance::destroy()
 {
     instance.destroy();
     instance = nullptr;
+}
+
+VulkanInstance::~VulkanInstance()
+{
+    destroy();
 }

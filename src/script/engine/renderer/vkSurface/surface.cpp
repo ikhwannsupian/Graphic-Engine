@@ -13,7 +13,8 @@ void VulkanSurface::create(SDL_Window* window, vk::Instance instance)
 {
     this->instance = instance;
 
-    if(!SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(instance), nullptr, &rawSurface)) std::cerr << "[SURFACE] Surface creation fail" << '\n';
+    SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(instance), nullptr, &rawSurface);
+    
     surface = vk::SurfaceKHR(rawSurface);
 
     std::cout << "[Vulkan] Surface succesfully create" << '\n';
@@ -23,8 +24,13 @@ vk::SurfaceKHR VulkanSurface::get() const
     return surface;
 }
 
-VulkanSurface::~VulkanSurface()
+void VulkanSurface::destroy()
 {
     instance.destroySurfaceKHR(surface);
     surface = nullptr;
+}
+
+VulkanSurface::~VulkanSurface()
+{
+    destroy();
 }

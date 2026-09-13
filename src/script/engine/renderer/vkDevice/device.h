@@ -6,24 +6,34 @@
 class VulkanDevice
 {   
     public:
+
         void create(vk::Instance instance);
 
-        vk::Device getDevice() const;      
-        vk::Queue getQueues() const;
+        vk::PhysicalDevice  getPhysicalDevice() const;      
+        vk::Device          getDevice() const;      
+        vk::Queue           getQueues() const;
+        uint32_t            getFamilyIndex() const;
 
+        void destroy();
         ~VulkanDevice();
+
     private:
+
         void findQueues();
         void findPhysicalDevice(vk::Instance instance);
         void createDevice();
         void createQueue();
 
-        vk::DeviceCreateInfo deviceInfo{};
-        vk::Device device = nullptr;
-        vk::PhysicalDevice physicalDevice = nullptr;
-        uint32_t graphicsFamily = UINT32_MAX;
-        vk::DeviceQueueCreateInfo queueInfo{};
-        vk::Queue graphicsQueue = nullptr;
+        vk::DeviceCreateInfo        deviceInfo      {};
+        vk::DeviceQueueCreateInfo   queueInfo       {};
+
+        vk::Device                  device          {};
+        vk::PhysicalDevice          physicalDevice  {};
+        vk::Queue                   graphicsQueue   {};
+        std::vector<vk::PhysicalDevice> Devices     {};
+
+        uint32_t graphicsFamily                     = UINT32_MAX;
+
 };
 
 #endif

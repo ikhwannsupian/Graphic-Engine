@@ -8,15 +8,19 @@
 class VulkanSurface
 {   
     public:
+
         void create(SDL_Window* window, vk::Instance instance);
         vk::SurfaceKHR get() const;
         
+        void destroy();
         ~VulkanSurface();
 
     private:
-        vk::Instance instance = nullptr;
-        VkSurfaceKHR rawSurface = VK_NULL_HANDLE;
-        vk::SurfaceKHR surface = nullptr;        
+
+        vk::Instance    instance    {};
+        vk::SurfaceKHR  surface     {};        
+
+        VkSurfaceKHR    rawSurface  = VK_NULL_HANDLE;
 };
 
 #endif

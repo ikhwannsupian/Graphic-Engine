@@ -7,7 +7,7 @@
 #include <stdexcept>
 
 #include <script/engine/window/window.h>
-#include <script/engine/renderer/renderer.h>
+#include <script/engine/renderer/vkRenderer/renderer.h>
 
 struct Chaos
 {
@@ -17,13 +17,15 @@ struct Chaos
 
 SDL_AppResult SDL_AppInit (void** appstate, int argc, char *argv[])
 {
+    freopen("log.txt", "w", stdout);
+    freopen("log.txt", "a", stderr);
     Chaos* brokenWorld = new Chaos();
     *appstate = brokenWorld;
     Window& window = brokenWorld->window;
     Renderer& renderer = brokenWorld->renderer;
 
-    if(!window.Init("", 90, 90)) return SDL_APP_FAILURE;
-
+    if(!window.create("", 90, 90)) return SDL_APP_FAILURE;
+    SDL_ShowWindow(window.getWindow()); // ✅ show window first
     try
     {
         renderer.run(window.getWindow());
@@ -31,7 +33,6 @@ SDL_AppResult SDL_AppInit (void** appstate, int argc, char *argv[])
     catch (const std::exception& err)
     {
         std::cerr << err.what() << '\n';
-        return SDL_APP_FAILURE;
     }
     return SDL_APP_CONTINUE;
 }
@@ -42,6 +43,8 @@ SDL_AppResult SDL_AppEvent (void* appstate, SDL_Event* event)
     Window& window = brokenWorld->window;
     Renderer& renderer = brokenWorld->renderer;
 
+    renderer.recreateSwapchain(event);
+
     if(!window.WindowEventHandler(event)) return SDL_APP_SUCCESS;
     return SDL_APP_CONTINUE;
 }
@@ -51,6 +54,8 @@ SDL_AppResult SDL_AppIterate (void* appstate)
     Chaos* brokenWorld = static_cast<Chaos*>(appstate);
     Window& window = brokenWorld->window;
     Renderer& renderer = brokenWorld->renderer;
+
+    renderer.running();
 
     return SDL_APP_CONTINUE;
 }

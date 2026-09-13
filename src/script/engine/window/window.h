@@ -5,15 +5,19 @@
 class Window 
 {
     public :
-        bool Init(const char* title, int width, int height);
+
+        bool create(const char* title, int width, int height);
         SDL_Window* getWindow();
         bool WindowEventHandler(const SDL_Event* event);
         void WindowDestroy();
+
+    private :
+
+        SDL_Window* window = nullptr;
+
         bool fullscreen = true;
         bool running = true;
 
-    private :
-        SDL_Window* window = nullptr;
 };
 
 #endif

@@ -4,17 +4,16 @@
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan.h>
 
-#include <SDL3/SDL.h>
-#include <SDL3/SDL_vulkan.h>
-
 #include "device.h"
 
 void VulkanDevice::create(vk::Instance instance)
 {
+
     findPhysicalDevice(instance);
     findQueues();
     createDevice();
-    createQueue();    
+    createQueue(); 
+
 }
 
 void VulkanDevice::findQueues()
@@ -44,21 +43,28 @@ void VulkanDevice::findQueues()
 }
 void VulkanDevice::findPhysicalDevice(vk::Instance instance)
 {
-
-
-    std::vector<vk::PhysicalDevice> Devices = instance.enumeratePhysicalDevices();
+    Devices = instance.enumeratePhysicalDevices();
 
 
     if (Devices.empty())
         throw std::runtime_error("Failed to find GPU!");
     physicalDevice = Devices.front();
-
 }
 void VulkanDevice::createDevice()
 {
+    std::vector<const char*> extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+
+    vk::PhysicalDeviceVulkan13Features vulkan13Features{};
+    vulkan13Features
+        .setDynamicRendering(true)
+        .setSynchronization2(true);
+
     deviceInfo
+        .setPNext(&vulkan13Features)
         .setQueueCreateInfoCount(1)
-        .setPQueueCreateInfos(&queueInfo);
+        .setPQueueCreateInfos(&queueInfo)
+        .setPEnabledExtensionNames(extensions);
+
     std::cout
         << "[Vulkan] Selected GPU: "
         << physicalDevice.getProperties().deviceName
@@ -70,20 +76,34 @@ void VulkanDevice::createDevice()
 void VulkanDevice::createQueue()
 {
     graphicsQueue = device.getQueue(graphicsFamily, 0);
-    std::cout << "[Vulkan] Graphics Queue succesfully build" << '\n';
+    std::cout << "[Vulkan] Graphics Queue succesfully build " << '\n';
 
 }
-vk::Queue VulkanDevice::getQueues() const
+vk::PhysicalDevice VulkanDevice::getPhysicalDevice() const
 {
-    return graphicsQueue;
+    return physicalDevice;
 }
 vk::Device VulkanDevice::getDevice() const
 {
     return device;
 }
+vk::Queue VulkanDevice::getQueues() const
+{
+    return graphicsQueue;
+}
 
-VulkanDevice::~VulkanDevice()
+uint32_t VulkanDevice::getFamilyIndex() const
+{
+    return graphicsFamily;
+}
+
+void VulkanDevice::destroy()
 {
     device.destroy();
     device = nullptr;
+}
+
+VulkanDevice::~VulkanDevice()
+{
+    destroy();
 }
