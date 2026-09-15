@@ -1,5 +1,6 @@
 #include <vulkan/vulkan.hpp>
 #include "pipeline.h"
+#include <iostream>
 #include <vector>
 #include <fstream>
 
@@ -16,10 +17,25 @@ void VulkanPipeline::init
     this->swapchainExtent           = swapchainExtent   ;
     this->surfaceFormat             = surfaceFormat     ;
 }
+vk::DescriptorSetLayoutBinding uboBinding()
+{
+    vk::DescriptorSetLayoutBinding binding{};
+
+    binding
+        .setBinding(0)
+        .setDescriptorType(vk::DescriptorType::eUniformBuffer)
+        .setDescriptorCount(1)
+        .setStageFlags(vk::ShaderStageFlagBits::eVertex);
+
+    return binding;
+}
 
 void VulkanPipeline::create()
 {
     createVertexBuffer();
+    createIndexBuffer();
+    createUniformBuffer();
+    createDescriptor();
     graphicsPipeline();
 }
 void VulkanPipeline::update(vk::Extent2D swapchainExtent)
@@ -28,6 +44,12 @@ void VulkanPipeline::update(vk::Extent2D swapchainExtent)
     device.destroyPipelineLayout(pipelineLayout);
 
     this->swapchainExtent = swapchainExtent;
+    vk::PipelineLayoutCreateInfo        pipelineLayoutInfo  {};
+
+    pipelineLayoutInfo
+        .setSetLayouts(descriptorSetLayout);
+
+    pipelineLayout = device.createPipelineLayout(pipelineLayoutInfo);
 
     graphicsPipeline();
 }
@@ -49,50 +71,7 @@ std::vector<char> VulkanPipeline::readFile(const std::string& filename)
 
     return buffer;
 }
-void VulkanPipeline::createVertexBuffer()
-{
-    vk::BufferCreateInfo bufferInfo{};
 
-    bufferInfo
-        .setSize(sizeof(Vertex) * vertices.size())
-        .setUsage(vk::BufferUsageFlagBits::eVertexBuffer)
-        .setSharingMode(vk::SharingMode::eExclusive);
-
-    vertexBuffer = device.createBuffer(bufferInfo);
-
-    vk::MemoryRequirements memReqs = device.getBufferMemoryRequirements(vertexBuffer);
-
-    vk::MemoryAllocateInfo allocInfo{};
-
-    allocInfo
-        .setAllocationSize(memReqs.size)
-        .setMemoryTypeIndex(findMemoryType(memReqs.memoryTypeBits, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
-
-    vertexBufferMemory = device.allocateMemory(allocInfo);
-
-    device.bindBufferMemory(vertexBuffer, vertexBufferMemory, 0);
-    void* data = device.mapMemory(vertexBufferMemory, 0, bufferInfo.size);
-    memcpy(data, vertices.data(), bufferInfo.size);
-    device.unmapMemory(vertexBufferMemory);
-
-}
-
-uint32_t VulkanPipeline::findMemoryType( uint32_t typeFilter, vk::MemoryPropertyFlags properties)
-{
-    vk::PhysicalDeviceMemoryProperties memProperties =
-        physicalDevice.getMemoryProperties();
-
-    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
-    {
-        if ((typeFilter & (1 << i)) &&
-            (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
-        {
-            return i;
-        }
-    }
-
-    throw std::runtime_error("Failed to find suitable memory type!");
-}
 void VulkanPipeline::graphicsPipeline()
 {
     auto vertCode = readFile("triangle.vert.spv");
@@ -101,13 +80,10 @@ void VulkanPipeline::graphicsPipeline()
     auto binding    = Vertex::getBindingDescription();
     auto attributes = Vertex::getAttributeDescriptions();
 
-    vk::PipelineVertexInputStateCreateInfo vertexInput{};
+
     vertexInput
         .setVertexBindingDescriptions(binding)
         .setVertexAttributeDescriptions(attributes);
-
-    vk::ShaderModuleCreateInfo vertInfo{};
-    vk::ShaderModuleCreateInfo fragInfo{};
 
     vertInfo
         .setCodeSize(vertCode.size())
@@ -117,14 +93,9 @@ void VulkanPipeline::graphicsPipeline()
         .setCodeSize(fragCode.size())
         .setPCode(reinterpret_cast<const uint32_t*>(fragCode.data()));
 
-    vk::ShaderModule vertShader{};
-    vk::ShaderModule fragShader{};
 
     vertShader = device.createShaderModule(vertInfo);
     fragShader = device.createShaderModule(fragInfo);
-
-    vk::PipelineShaderStageCreateInfo vertStage{};
-    vk::PipelineShaderStageCreateInfo fragStage{};
 
     vertStage
         .setStage(vk::ShaderStageFlagBits::eVertex)
@@ -138,12 +109,7 @@ void VulkanPipeline::graphicsPipeline()
 
     std::array stages {vertStage, fragStage};
 
-    vk::PipelineLayoutCreateInfo layoutInfo{};
 
-    pipelineLayout = device.createPipelineLayout(layoutInfo);
-
-    
-    vk::PipelineInputAssemblyStateCreateInfo inputAssembly{};
 
     inputAssembly
         .setTopology(vk::PrimitiveTopology::eTriangleList)
@@ -161,8 +127,6 @@ void VulkanPipeline::graphicsPipeline()
         .setOffset({0, 0})
         .setExtent(swapchainExtent);
 
-    vk::PipelineViewportStateCreateInfo viewportStateInfo{};
-
     viewportStateInfo
         .setViewportCount(1)
         .setScissorCount(1);
@@ -173,12 +137,8 @@ void VulkanPipeline::graphicsPipeline()
         vk::DynamicState::eScissor
     };
 
-    vk::PipelineDynamicStateCreateInfo dynamicState{};
-
     dynamicState
         .setDynamicStates(dynamicStates);
-
-    vk::PipelineRasterizationStateCreateInfo rasterizer{};
 
     rasterizer
         .setDepthClampEnable(false)
@@ -188,13 +148,8 @@ void VulkanPipeline::graphicsPipeline()
         .setFrontFace(vk::FrontFace::eClockwise)
         .setLineWidth(1.0f);
 
-    vk::PipelineMultisampleStateCreateInfo multisampling{};
-
     multisampling
         .setRasterizationSamples(vk::SampleCountFlagBits::e1);
-
-
-    vk::PipelineColorBlendAttachmentState colorBlendingAttachment{};
 
     colorBlendingAttachment
         .setBlendEnable(false)
@@ -205,18 +160,12 @@ void VulkanPipeline::graphicsPipeline()
             vk::ColorComponentFlagBits::eA
         );
 
-    vk::PipelineColorBlendStateCreateInfo colorBlending{};
-
     colorBlending
         .setLogicOpEnable(false)
         .setAttachments(colorBlendingAttachment);
 
-    vk::PipelineRenderingCreateInfo pipelineRenderingInfo{};
-
     pipelineRenderingInfo
         .setColorAttachmentFormats(surfaceFormat.format);
-
-    vk::GraphicsPipelineCreateInfo pipelineInfo{};
 
     pipelineInfo
         .setStages(stages)
@@ -245,33 +194,26 @@ void VulkanPipeline::graphicsPipeline()
         throw std::runtime_error("Pipeline exception: " + std::string(e.what()));
     }
 
+
     device.destroyShaderModule(vertShader);
     device.destroyShaderModule(fragShader);
 
 }
-vk::Buffer  VulkanPipeline::getVertexBuffer()
-{
-    return vertexBuffer;
-}
-vk::Pipeline VulkanPipeline::getPipeline()
-{
-    return pipeline;
-}
-vk::Rect2D  VulkanPipeline::getScissor()
-{
-    return scissor;
-}
-vk::Viewport VulkanPipeline::getViewport()
-{
-    return viewport;
-}
-
 void VulkanPipeline::destroy()
 {
     device.destroyBuffer(vertexBuffer);
     device.freeMemory(vertexBufferMemory);
     device.destroyPipeline(pipeline);
     device.destroyPipelineLayout(pipelineLayout);
+
+        if (indexBuffer)
+    {
+        device.destroyBuffer(indexBuffer);
+        device.freeMemory(indexBufferMemory);
+        indexBuffer       = nullptr;
+        indexBufferMemory = nullptr;
+    }
+
     
     pipeline = nullptr;
     pipelineLayout = nullptr;;

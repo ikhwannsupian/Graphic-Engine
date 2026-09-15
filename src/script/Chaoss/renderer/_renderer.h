@@ -1,21 +1,26 @@
 #ifndef RENDERER_H
 #define RENDERER_H
-#include <script/engine/renderer/vkDevice/device.h>
-#include <script/engine/renderer/vkInstance/instance.h>
-#include <script/engine/renderer/vkSurface/surface.h>
-#include <script/engine/renderer/vkSwapchain/swapchain.h>
-#include <script/engine/renderer/vkImageView/imageView.h>
-#include <script/engine/renderer/vkCommand/command.h>
-#include <script/engine/renderer/vkPipeline/pipeline.h>
+
+#include <script/Chaoss/renderer/00_vkInstance/instance.h>
+#include <script/Chaoss/renderer/01_vkSurface/surface.h>
+#include <script/Chaoss/renderer/02_vkDevice/device.h>
+#include <script/Chaoss/renderer/03_vkSwapchain/swapchain.h>
+#include <script/Chaoss/renderer/04_vkImageView/imageView.h>
+#include <script/Chaoss/renderer/05_vkPipeline/pipeline.h>
+#include <script/Chaoss/renderer/06_vkCommand/command.h>
 
 #include <vulkan/vulkan.hpp>
 
 class Renderer
 {
     public:
+        Renderer() = default;
+
         void run(SDL_Window* window);
         void recreateSwapchain(const SDL_Event* event);
+
         void running();
+        void destroy();
 
         ~Renderer();
         

@@ -1,5 +1,9 @@
 #ifndef VULKANCOMMAND_H
 #define VULKANCOMMAND_H
+#include <iostream>
+#include <vector>
+#include <string>
+#include <fstream>
 #include <vulkan/vulkan.hpp>
 
 
@@ -19,7 +23,11 @@ class VulkanCommand
             vk::Pipeline                      pipeline                  ,
             vk::Buffer                        vertexBuffer              ,
             vk::Viewport                      viewport                  ,
-            vk::Rect2D                        scissor                              
+            vk::Rect2D                        scissor                   ,
+            vk::Buffer                        indexBuffer               ,
+            uint32_t                          indicesCount              ,
+            vk::PipelineLayout                pipelineLayout            ,
+            vk::DescriptorSet                 descriptorSet
         );
 
         void updateSwapchain
@@ -28,6 +36,7 @@ class VulkanCommand
             vk::Extent2D                      swapchainExtent           , 
             std::vector<vk::Image>            swapchainImage            ,
             std::vector<vk::ImageView>        swapchainImageView        ,
+            vk::PipelineLayout                pipelineLayout            ,
             vk::Pipeline                      pipeline                  ,
             vk::Buffer                        vertexBuffer              ,
             vk::Viewport                      viewport                  ,
@@ -47,6 +56,7 @@ class VulkanCommand
         void resetFence();
         void acquire();
         void recordCommand();
+        void recordCommandEmpty();
         void barrier();
         void submit();
         uint32_t findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties);
@@ -68,7 +78,8 @@ class VulkanCommand
         vk::Viewport                    viewport            {};
         vk::Rect2D                      scissor             {};
         vk::Buffer                      vertexBuffer        {};
-
+        vk::Buffer                      indexBuffer         {};
+        uint16_t                        indicesCount        {};
 
         vk::Device                      device              {};
         vk::PhysicalDevice              physicalDevice      {};
@@ -78,6 +89,10 @@ class VulkanCommand
         std::vector<vk::ImageView>      swapchainImageView  {};
         std::vector<vk::Image>          swapchainImage      {};
         vk::Queue                       graphicsQueue       {};
+
+        vk::PipelineLayout pipelineLayout{};
+        vk::DescriptorSet    descriptorSet{};
+
 
         uint32_t imageIndex = 0;
         uint32_t lastFrame = 0;

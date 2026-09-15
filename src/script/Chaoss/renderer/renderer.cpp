@@ -23,6 +23,7 @@ void Renderer::run(SDL_Window* window)
         swapchain.getExtent(),
         swapchain.getSurfaceFormat()
     );
+
     pipeline.create();
 
     command.init(
@@ -37,7 +38,11 @@ void Renderer::run(SDL_Window* window)
         pipeline.getPipeline(),
         pipeline.getVertexBuffer(),
         pipeline.getViewport(),
-        pipeline.getScissor()
+        pipeline.getScissor(),
+        pipeline.getIndexBuffer(),
+        pipeline.getIndices(),
+        pipeline.getPipelineLayout(),
+        pipeline.getDescriptorSet()
     );
 
 
@@ -49,7 +54,11 @@ void Renderer::run(SDL_Window* window)
 
 void Renderer::recreateSwapchain(const SDL_Event* event)
 {   
-    if(event->type != SDL_EVENT_WINDOW_RESIZED) return;
+    if(event->type != SDL_EVENT_WINDOW_RESIZED) 
+    {
+        return;
+    }
+
 
     device.getDevice().waitIdle();
     imageView.destroy();
@@ -63,22 +72,22 @@ void Renderer::recreateSwapchain(const SDL_Event* event)
         swapchain.getExtent(),
         swapchain.getSwapchainImage(),
         imageView.getImageViews(),
+        pipeline.getPipelineLayout(),
         pipeline.getPipeline(),
         pipeline.getVertexBuffer(),
         pipeline.getViewport(),
         pipeline.getScissor()
     );
 
-
 }
+
 
 
 void Renderer::running()
 {
     command.drawFrame();
 }
-
-Renderer::~Renderer()
+void Renderer::destroy()
 {
     device.getDevice().waitIdle();
     pipeline.destroy();
@@ -88,4 +97,9 @@ Renderer::~Renderer()
     device.destroy();
     surface.destroy();
     instance.destroy();
+}
+Renderer::~Renderer()
+{
+    if(device.getDevice())
+        destroy();
 }
