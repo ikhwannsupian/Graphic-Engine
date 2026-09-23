@@ -5,13 +5,9 @@
 class Entity
 {
     public:
-        RenderObjectStruct& getRenderObject() { return player.getPlayerRenderData();}
-        const RenderObjectStruct& getRenderObject() const { return player.getPlayerRenderData();}
-        void stateChange(bool hasBuffer);
-        void isVisible(bool visible);
+
 
     private:
-        Player player;
 
 };
 

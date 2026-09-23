@@ -12,7 +12,7 @@ class Renderer
         ~Renderer();
 
         void screenUpdate();
-        bool render(const RenderObjectStruct& renderObjectData);
+        bool render();
 
     private:
 

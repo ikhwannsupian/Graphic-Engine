@@ -7,11 +7,8 @@
 class RenderObject
 {
     public:
-        const RenderObjectStruct& getRenderData() const { return entity.getRenderObject(); }
-        void stateChange (bool hasBuffer) {entity.stateChange(hasBuffer);}
-        void isVisible ();
+
     private:
-        Entity entity; 
-        bool visible = false;
+
 };
 #endif

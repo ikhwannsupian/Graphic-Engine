@@ -8,7 +8,6 @@
 #include "projection.h"
 #include "init.h"
 #include "buffer.h"
-#include <script/game/renderObject/struct/struct.h>
 #include <iostream>
 #include <SDL3/SDL.h>
 #include <random>
@@ -20,7 +19,7 @@ class GLRenderer
         ~GLRenderer();
 
         void screenUpdate();
-        bool render(const RenderObjectStruct& renderObjectData);
+        bool render();
     private:
 
         GlContext context;

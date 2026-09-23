@@ -17,7 +17,7 @@ void Renderer::screenUpdate()
     GlRenderer.screenUpdate();
 }
 
-bool Renderer::render(const RenderObjectStruct& renderObjectData)
+bool Renderer::render()
 {
-    return GlRenderer.render(renderObjectData);
+    return GlRenderer.render();
 }

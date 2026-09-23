@@ -1,6 +1,6 @@
 #ifndef STRUCT_ENTITY_H
 #define STRUCT_ENTITY_H
-#include "enum.name.h"
+#include "enum.h"
 #include <glm/glm.hpp>
 
 struct Vertex
@@ -33,7 +33,6 @@ struct MaterialHandle
 };
 struct RenderObjectStruct
 {
-    ObjectName name;
     bool dirty     = false;
     RenderState renderState;
     
