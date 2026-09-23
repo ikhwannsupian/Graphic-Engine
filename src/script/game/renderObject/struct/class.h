@@ -1,16 +1,23 @@
 #ifndef CLASS_H
 #define CLASS_H
 
-#include <struct.h>
+#include "struct.h"
 
 class RenderObjectClass
 {
     public:
-        const RenderObjectStruct& getPlayerRenderData() const { return player; }
+        RenderObjectClass(ObjectName name) 
+        :visible(false),objectRdata(name, false, RenderState(visible))
+        {
+            objectRdata.name = name;
+        }
+        RenderObjectStruct& getPlayerRenderData()  { return objectRdata; }
+        const RenderObjectStruct& getPlayerRenderData() const { return objectRdata; }
 
     protected: 
-        RenderObjectStruct player;
-        Transform playerTransform;
+        RenderObjectStruct objectRdata;
+        Transform ObjectTransform;
+        bool visible;
 };
 
 #endif

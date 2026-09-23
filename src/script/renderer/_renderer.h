@@ -1,7 +1,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include <script/renderer/openGL/_core.h>
+#include <openGL/_core.h>
 
 class Renderer
 {
@@ -12,7 +12,7 @@ class Renderer
         ~Renderer();
 
         void screenUpdate();
-        void render();
+        bool render(const RenderObjectStruct& renderObjectData);
 
     private:
 

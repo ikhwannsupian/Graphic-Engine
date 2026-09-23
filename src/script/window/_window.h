@@ -4,7 +4,7 @@
 #include <SDL3/SDL.h>
 #include <iostream>
 
-#include <script/window/first/_window.first.h>
+#include <first/_window.first.h>
 
 struct WindowStruct
 {

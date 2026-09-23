@@ -1,4 +1,4 @@
-#define STB_IMAGE_IMPLEMENTATION
+// #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
 #include <iostream>
@@ -7,16 +7,12 @@
 #include "_core.h"
 
 GLRenderer::GLRenderer(SDL_Window* window)
-:projection(window)
-{
-    this->window = window;
-    context = SDL_GL_CreateContext(window);
-    gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress);
-}
+:context(window), projection(window)
+{}
+
 GLRenderer::~GLRenderer()
-{
-    SDL_GL_DestroyContext(context);
-}
+{}
+
 void GLRenderer::screenUpdate()
 {
     projection.updateProjection();
@@ -25,8 +21,4 @@ void GLRenderer::screenUpdate()
 
 
 
-void GLRenderer::render()
-{
-
-}
 

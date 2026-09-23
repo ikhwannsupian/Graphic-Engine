@@ -5,9 +5,9 @@
 
 
 
-#include <script/window/core/_window.h>
-#include <script/renderer/core/_renderer.h>
-#include <script/game/core/_core.h>
+#include "_window.h"
+#include "_renderer.h"
+#include "_game.h"
 
 
 class Engine

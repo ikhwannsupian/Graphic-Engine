@@ -57,6 +57,7 @@ class Projection
                 GL_FALSE,             
                 glm::value_ptr(projection) 
             );
+            std::cout << "[OPENGL] Window is Sizing!" << '\n';
         }
     private:
         SDL_Window* window;

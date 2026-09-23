@@ -10,33 +10,52 @@
 class VBO
 {
     public:
-        GLuint id;
-        VBO () {    glGenBuffers   (1, &id  );    }
-        ~VBO() {    glDeleteBuffers(1, &id  );    }
-        void bind()  {glBindBuffer(GL_ARRAY_BUFFER, id);}
+        VBO () {    glGenBuffers   (1, &VBOid  );    }
+        ~VBO() {    glDeleteBuffers(1, &VBOid  );    }
+        void bind()  {glBindBuffer(GL_ARRAY_BUFFER, VBOid);}
+        template <typename T> 
+        void data(const std::vector<T>& vertices) 
+        {
+            glBindBuffer(GL_ARRAY_BUFFER, VBOid);
+            glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices.size() * sizeof(T)), vertices.data(), GL_STATIC_DRAW);
+        }
+        GLuint id() const { return VBOid; }
         VBO(const VBO&) = delete;
         VBO& operator=(const VBO&) = delete;
+    private:
+        GLuint VBOid;
 };
 class EBO
 {
     public:
-        GLuint id;
-        EBO () {    glGenBuffers   (1, &id  );    }
-        ~EBO() {    glDeleteBuffers(1, &id  );    }
-        void bind() {glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);}
+        EBO () {    glGenBuffers   (1, &EBOid  );    }
+        ~EBO() {    glDeleteBuffers(1, &EBOid  );    }
+        void bind() {glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOid);}
+        template <typename T> 
+        void data(const T& vertices) 
+        {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOid);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices.size() * sizeof(T)), vertices.data(), GL_STATIC_DRAW);
+        }
+        GLuint id() const { return EBOid; }
         EBO(const EBO&) = delete;
         EBO& operator=(const EBO&) = delete;
+    private:
+        GLuint EBOid;
 };
 class VAO
 {
     public:
-        GLuint id;
-        VAO () {    glGenVertexArrays   (1, &id  );    }
-        ~VAO() {    glDeleteVertexArrays(1, &id  );    }
-        void bind() {glBindVertexArray(id);}
+        VAO () {    glGenVertexArrays   (1, &VAOid  );    }
+        ~VAO() {    glDeleteVertexArrays(1, &VAOid  );    }
+        void bind() {glBindVertexArray(VAOid);}
+        GLuint id() const { return VAOid;}
         VAO(const VAO&) = delete;
         VAO& operator=(const VAO&) = delete;
+    private:
+        GLuint VAOid;
 };
+
 class Framebuffer
 {
     public:
@@ -46,9 +65,7 @@ class Framebuffer
         ~Framebuffer() { glDeleteFramebuffers(1, &id); }
         Framebuffer(const Framebuffer&) = delete;
         Framebuffer& operator=(const Framebuffer&) = delete;
-
         void bind() { glBindFramebuffer(GL_FRAMEBUFFER, id); }
-
         void unbind(){ glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 };
 class Shader
@@ -64,9 +81,7 @@ class Shader
             glShaderSource( shader, 1, &sourcePtr, nullptr);
             glCompileShader( shader );            
         }
-        
         ~Shader()  {  glDeleteShader( shader );  }
-
         Shader(const Shader&) = delete;
         Shader& operator=(const Shader&) = delete;
     private:
@@ -86,33 +101,24 @@ class Shader
 class ShaderProgram
 {
     public:
-
         GLuint program;
-
         ShaderProgram( const Shader* vertex, const Shader* fragment = nullptr)
         {
             program = glCreateProgram();
-
             glAttachShader(program, vertex->shader);
             if ( fragment )glAttachShader(program, fragment->shader);
-
             glLinkProgram(program);
         }
-
         ~ShaderProgram() {  glDeleteProgram(program);  }
-
         ShaderProgram(const ShaderProgram&) = delete;
         ShaderProgram& operator=(const ShaderProgram&) = delete;
-
         void bind()  {  glUseProgram(program); }
 };
 
 class Texture
 {
 public:
-
     GLuint id;
-
     Texture(const char* path)
     {
         glGenTextures(1, &id);
@@ -138,12 +144,9 @@ public:
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, s );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, t );
     }
-
     ~Texture() { glDeleteTextures(1, &id); }
-
     Texture(const Texture&) = delete;
     Texture& operator=(const Texture&) = delete;
-
     void bind(){ glBindTexture(GL_TEXTURE_2D, id); }
 };
 

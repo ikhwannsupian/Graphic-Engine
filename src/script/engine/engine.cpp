@@ -4,7 +4,6 @@ Engine::Engine()
 {
     window = new Window();
     renderer = new Renderer(window->getWindowFirst());
-    renderer->render();
     game = new Game();
 
 }
@@ -18,6 +17,7 @@ bool Engine::event(const SDL_Event* event)
     {
         renderer->screenUpdate();
     }
+    game->event(event);
 
     return window->event(event);
 }
